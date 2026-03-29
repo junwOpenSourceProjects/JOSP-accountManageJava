@@ -1,0 +1,47 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: JOSP-accountManageJava
+  
+  datasource:
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://localhost:3306/account_manage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: wo1261931780.JOSPaccountManageJava.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# Knife4j配置
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    swagger-model-name: 实体类列表
+
+# JWT配置
+jwt:
+  secret: junwAccountManageSecretKey2026VeryLongSecretKeyForSecurity
+  expiration: 86400000 # 24小时
+
+# 日志配置
+logging:
+  level:
+    wo1261931780.JOSPaccountManageJava: debug
+    org.springframework.security: debug
