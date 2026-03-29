@@ -1,4 +1,4 @@
-# 🏦 JOSP-AccountManage - 账号管理系统后端
+# 🏦 JOSP-accountManageJava - 账号管理系统后端
 
 ![Java](https://img.shields.io/badge/Java-17+-orange?logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=springboot)
@@ -6,9 +6,36 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?logo=mysql)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
 
+> ⚠️ 项目状态: 规划中,暂无实际代码
+
 ## 📖 项目简介
 
-JOSP-AccountManage是一个基于Spring Boot的账号管理系统后端服务,提供用户账号的统一管理、权限控制和认证授权功能。
+JOSP-accountManageJava 是规划中的账号管理系统后端服务,计划提供用户账号的统一管理、权限控制和认证授权功能。
+
+**前端项目**: [JOSP-accountManagerVue3](../JOSP-accountManagerVue3)
+
+## ⚠️ 项目状态
+
+**当前状态**: 项目规划阶段
+
+**已有内容**:
+- ✅ LICENSE文件 (AGPL-3.0)
+- ✅ README文档
+
+**待开发内容**:
+- ⏳ 项目代码结构
+- ⏳ 用户管理功能
+- ⏳ 角色管理功能
+- ⏳ 权限管理功能
+- ⏳ 认证授权功能
+
+## 🎯 计划功能
+
+### 核心模块
+- 用户管理 - 用户增删改查
+- 角色管理 - 角色定义与分配
+- 权限管理 - 权限控制
+- 认证授权 - 登录认证
 
 ## 🏗️ 系统架构
 
