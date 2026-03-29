@@ -1,386 +1,284 @@
-# 🔐 AccountManage Backend - 账号密码管理系统后端
+# 🏦 JOSP-AccountManage - 账号管理系统后端
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.4.1-brightgreen" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/MyBatis%20Plus-3.5.9-orange" alt="MyBatis Plus">
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479a1" alt="MySQL">
-  <img src="https://img.shields.io/badge/JWT-0.12.6-purple" alt="JWT">
-  <img src="https://img.shields.io/badge/Knife4j-4.5.0-blue" alt="Knife4j">
-  <img src="https://img.shields.io/badge/License-AGPL--3.0-blue" alt="License">
-</p>
-
-<p align="center">
-  账号密码管理系统的后端 API 服务，基于 Spring Boot 3 构建，提供安全可靠的 RESTful API。
-</p>
-
----
-
-## 📋 目录
-
-- [项目简介](#-项目简介)
-- [功能特性](#-功能特性)
-- [技术架构](#-技术架构)
-- [项目结构](#-项目结构)
-- [快速开始](#-快速开始)
-- [API 文档](#-api-文档)
-- [安全特性](#-安全特性)
-- [开发计划](#-开发计划)
-- [相关项目](#-相关项目)
-- [贡献指南](#-贡献指南)
-- [许可证](#-许可证)
-
----
+![Java](https://img.shields.io/badge/Java-17+-orange?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen?logo=springboot)
+![MyBatis](https://img.shields.io/badge/MyBatis-3.5+-red?logo=mybatis)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?logo=mysql)
+![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
 
 ## 📖 项目简介
 
-这是账号密码管理系统的后端项目，提供完整的 RESTful API 服务。
+JOSP-AccountManage是一个基于Spring Boot的账号管理系统后端服务,提供用户账号的统一管理、权限控制和认证授权功能。
 
-前端项目请访问: [account_manager_vue3](https://github.com/wo1261931780/account_manager_vue3)
+## 🏗️ 系统架构
 
----
-
-## ✨ 功能特性
-
-### 核心功能
-
-| 模块 | 功能描述 |
-|------|----------|
-| 🔑 **账号管理** | 支持多平台账号的增删改查，密码 AES-256 加密存储 |
-| 🏢 **平台管理** | 管理各类平台信息，支持平台分类、图标设置、URL 记录 |
-| 📊 **仪表盘** | 提供数据统计 API，支持图表数据聚合 |
-| ⭐ **收藏功能** | 常用账号收藏，支持置顶排序 |
-| 🛠️ **密码工具** | 随机密码生成，密码强度检测，过期提醒 |
-| 🔍 **智能搜索** | 多条件组合查询，分页排序 |
-
-### 安全特性
-
-- 🔒 **AES-256 加密**: 所有账号密码采用 AES-256 对称加密存储
-- 🎫 **JWT 认证**: 基于 JWT 的无状态身份认证
-- 🔄 **Token 刷新**: 支持 Access Token / Refresh Token 双令牌机制
-- 🚦 **接口限流**: 基于注解的接口限流，防止暴力破解
-- 📝 **操作日志**: 完整的操作日志记录，支持审计追溯
-- 🔐 **密钥轮换**: 支持加密密钥定期轮换
-
----
-
-## 🏗️ 技术架构
-
-### 技术栈
-
-| 技术 | 版本 | 说明 |
-|------|------|------|
-| Spring Boot | 3.4.1 | 后端框架 |
-| MyBatis Plus | 3.5.9 | ORM 框架 |
-| MySQL | 8.0+ | 关系型数据库 |
-| JWT (jjwt) | 0.12.6 | 身份认证 |
-| Knife4j | 4.5.0 | API 文档 |
-| Hutool | 5.8.34 | 工具库 |
-| EasyExcel | 4.0.3 | Excel 导入导出 |
-| Lombok | - | 简化代码 |
-
-### 系统架构图
-
+```mermaid
+graph TB
+    subgraph "前端层"
+        Web[Web管理端]
+        Mobile[移动端]
+    end
+    
+    subgraph "网关层"
+        Gateway[API Gateway]
+        AuthFilter[认证过滤器]
+    end
+    
+    subgraph "服务层"
+        UserController[用户控制器]
+        RoleController[角色控制器]
+        PermissionController[权限控制器]
+        AuthController[认证控制器]
+    end
+    
+    subgraph "业务层"
+        UserService[用户服务]
+        RoleService[角色服务]
+        PermissionService[权限服务]
+        AuthService[认证服务]
+    end
+    
+    subgraph "数据层"
+        UserMapper[用户Mapper]
+        RoleMapper[角色Mapper]
+        PermissionMapper[权限Mapper]
+        Redis[Redis缓存]
+        MySQL[(MySQL数据库)]
+    end
+    
+    Web --> Gateway
+    Mobile --> Gateway
+    Gateway --> AuthFilter
+    AuthFilter --> UserController
+    AuthFilter --> RoleController
+    AuthFilter --> PermissionController
+    AuthFilter --> AuthController
+    
+    UserController --> UserService
+    RoleController --> RoleService
+    PermissionController --> PermissionService
+    AuthController --> AuthService
+    
+    UserService --> UserMapper
+    RoleService --> RoleMapper
+    PermissionService --> PermissionMapper
+    AuthService --> Redis
+    
+    UserMapper --> MySQL
+    RoleMapper --> MySQL
+    PermissionMapper --> MySQL
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        前端 (Vue 3 + Element Plus)               │
-│                 仓库: account_manager_vue3                        │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │ HTTP/REST API
-┌──────────────────────────────▼──────────────────────────────────┐
-│                     后端 (Spring Boot 3)                         │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │ Controller  │──│   Service   │──│       Mapper            │  │
-│  │  (REST API) │  │ (业务逻辑)  │  │   (MyBatis Plus DAO)    │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │ JWT Filter  │  │  AES 加密   │  │      限流 Aspect        │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
-└──────────────────────────────┬──────────────────────────────────┘
-                               │
-┌──────────────────────────────▼──────────────────────────────────┐
-│                       数据存储层                                  │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │                      MySQL 8.0+                            │  │
-│  │  sys_user | platform_type | platform | account | favorites │  │
-│  └───────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📁 项目结构
-
-```
-accountManage/
-├── src/main/java/wo1261931780/accountManage/
-│   ├── AccountManageApplication.java  # 启动类
-│   ├── annotation/                    # 自定义注解
-│   │   └── RateLimit.java             # 限流注解
-│   ├── aspect/                        # AOP 切面
-│   │   └── RateLimitAspect.java       # 限流切面
-│   ├── common/                        # 公共模块
-│   │   ├── config/                    # 配置类
-│   │   │   └── CorsConfig.java        # 跨域配置
-│   │   ├── exception/                 # 异常处理
-│   │   └── result/                    # 统一响应
-│   ├── config/                        # 业务配置
-│   │   └── SecurityConfig.java        # 安全配置
-│   ├── controller/                    # 控制器层
-│   │   ├── AccountController.java     # 账号管理
-│   │   ├── AuthController.java        # 认证授权
-│   │   ├── DashboardController.java   # 仪表盘
-│   │   ├── PlatformController.java    # 平台管理
-│   │   └── PasswordController.java    # 密码工具
-│   ├── dto/                           # 数据传输对象
-│   ├── entity/                        # 实体类
-│   ├── mapper/                        # MyBatis Mapper
-│   ├── security/                      # 安全模块
-│   │   ├── JwtTokenProvider.java      # JWT 提供者
-│   │   └── JwtAuthenticationFilter.java # JWT 过滤器
-│   ├── service/                       # 服务层
-│   │   ├── impl/                      # 服务实现
-│   │   └── ...Service.java            # 服务接口
-│   └── util/                          # 工具类
-│       └── AesUtils.java              # AES 加密工具
-│
-├── src/main/resources/
-│   ├── application.yaml               # 应用配置
-│   └── mapper/                        # MyBatis XML
-│       ├── AccountMapper.xml
-│       └── PlatformMapper.xml
-│
-├── sql/                               # SQL 脚本
-│   ├── 01_schema.sql                  # 表结构
-│   ├── 02_init_data.sql               # 初始数据
-│   ├── 03_security_tables.sql         # 安全相关表
-│   ├── 04_password_expiration.sql     # 密码过期
-│   ├── 05_backup_and_history.sql      # 备份历史
-│   └── 06_favorites_and_recent.sql    # 收藏和访问记录
-│
-├── docs/                              # 文档
-│   ├── DEVELOPMENT_PLAN.md            # 开发计划
-│   └── HTTPS_CONFIG.md                # HTTPS 配置
-│
-├── pom.xml                            # Maven 配置
-└── README.md                          # 项目说明
-```
-
----
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- **JDK**: 17+
-- **MySQL**: 8.0+
-- **Maven**: 3.8+
+- JDK 17+
+- Maven 3.6+
+- MySQL 8.0+
+- Redis 6.0+
 
-### 1. 克隆项目
-
-```bash
-git clone https://github.com/wo1261931780/accountManage.git
-cd accountManage
-```
-
-### 2. 初始化数据库
+### 安装步骤
 
 ```bash
-# 创建数据库
-mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS account_manage DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+# 1. 克隆项目
+git clone https://github.com/yourusername/JOSP-accountManageJava.git
 
-# 执行初始化脚本
-for f in sql/*.sql; do mysql -u root -p account_manage < "$f"; done
-```
+# 2. 进入项目目录
+cd JOSP-accountManageJava
 
-### 3. 配置数据库连接
-
-编辑 `src/main/resources/application.yaml`：
-
-```yaml
+# 3. 配置数据库
+# 修改 src/main/resources/application.yml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/account_manage?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/account_manage?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: your_password  # 修改为你的数据库密码
+    password: your_password
+
+# 4. 初始化数据库
+mysql -u root -p < db/schema.sql
+
+# 5. 编译项目
+mvn clean install
+
+# 6. 运行项目
+mvn spring-boot:run
 ```
 
-### 4. 启动后端服务
+## 🛠️ 技术栈
 
-```bash
-# 使用 Maven 启动
-./mvnw spring-boot:run
+| 技术 | 版本 | 说明 |
+|------|------|------|
+| Spring Boot | 3.x | 应用框架 |
+| MyBatis | 3.5+ | ORM框架 |
+| MySQL | 8.0+ | 关系数据库 |
+| Redis | 6.0+ | 缓存数据库 |
+| Spring Security | 3.x | 安全框架 |
+| JWT | - | 令牌认证 |
+| Maven | 3.6+ | 项目管理工具 |
 
-# 或者打包后运行
-./mvnw clean package -DskipTests
-java -jar target/accountManage-0.0.1-SNAPSHOT.jar
+## 📁 项目结构
+
+```
+JOSP-accountManageJava/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/josp/account/
+│   │   │       ├── controller/      # 控制器层
+│   │   │       ├── service/         # 业务逻辑层
+│   │   │       ├── mapper/          # 数据访问层
+│   │   │       ├── entity/          # 实体类
+│   │   │       ├── dto/             # 数据传输对象
+│   │   │       ├── config/          # 配置类
+│   │   │       ├── security/        # 安全配置
+│   │   │       └── utils/           # 工具类
+│   │   └── resources/
+│   │       ├── mapper/              # MyBatis映射文件
+│   │       ├── application.yml      # 配置文件
+│   │       └── db/                  # 数据库脚本
+│   └── test/                        # 测试代码
+├── pom.xml                          # Maven配置
+└── README.md                        # 项目说明
 ```
 
-后端服务将启动在 http://localhost:8080
+## 🔑 核心功能
 
-### 5. 访问系统
-
-- **API 文档**: http://localhost:8080/doc.html
-- **默认账号**: `admin` / `admin123`
-
----
-
-## 📚 API 文档
-
-启动后端后访问 http://localhost:8080/doc.html 查看完整的 API 文档（Knife4j）。
-
-### 主要接口
-
-| 模块 | 接口 | 方法 | 描述 |
-|------|------|------|------|
-| 认证 | `/api/v1/auth/login` | POST | 用户登录 |
-| 认证 | `/api/v1/auth/refresh` | POST | 刷新令牌 |
-| 认证 | `/api/v1/auth/logout` | POST | 用户登出 |
-| 认证 | `/api/v1/auth/me` | GET | 获取当前用户 |
-| 账号 | `/api/v1/accounts` | GET | 分页查询账号 |
-| 账号 | `/api/v1/accounts/{id}` | GET | 获取账号详情 |
-| 账号 | `/api/v1/accounts` | POST | 创建账号 |
-| 账号 | `/api/v1/accounts/{id}` | PUT | 更新账号 |
-| 账号 | `/api/v1/accounts/{id}` | DELETE | 删除账号 |
-| 账号 | `/api/v1/accounts/{id}/password` | GET | 获取解密密码 |
-| 平台 | `/api/v1/platforms` | GET | 获取平台列表 |
-| 平台 | `/api/v1/platform-types` | GET | 获取平台类型 |
-| 收藏 | `/api/v1/favorites` | GET | 获取收藏列表 |
-| 收藏 | `/api/v1/favorites/{accountId}` | POST | 添加收藏 |
-| 仪表盘 | `/api/v1/dashboard/stats` | GET | 获取统计数据 |
-| 密码 | `/api/v1/password/generate` | POST | 生成随机密码 |
-| 密码 | `/api/v1/password/strength` | POST | 检测密码强度 |
-
----
-
-## 🔐 安全特性
-
-### 密码加密
-
-所有账号密码使用 **AES-256-CBC** 对称加密算法存储：
+### 用户管理
 
 ```java
-// 加密存储
-String encrypted = AesUtils.encrypt(plainPassword, secretKey);
-
-// 解密查看
-String decrypted = AesUtils.decrypt(encrypted, secretKey);
-```
-
-### JWT 认证流程
-
-```
-1. 用户登录 → 返回 accessToken + refreshToken
-2. 请求 API → Header 携带 Authorization: Bearer {accessToken}
-3. Token 过期 → 使用 refreshToken 刷新获取新 Token
-4. 双 Token 都过期 → 重新登录
-```
-
-### 接口限流
-
-使用自定义注解实现接口限流：
-
-```java
-@RateLimit(limit = 5, period = 60)  // 每分钟最多 5 次
-@PostMapping("/login")
-public Result<LoginResponse> login(@RequestBody LoginRequest request) {
-    // ...
-}
-```
-
-### 跨域配置
-
-已配置 CORS 支持前端跨域访问，配置位于 `CorsConfig.java`：
-
-```java
-@Configuration
-public class CorsConfig {
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("*");
-        config.setAllowCredentials(true);
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        // ...
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    
+    @Autowired
+    private UserService userService;
+    
+    @PostMapping
+    public Result<User> createUser(@RequestBody UserDTO userDTO) {
+        return Result.success(userService.createUser(userDTO));
+    }
+    
+    @GetMapping("/{id}")
+    public Result<User> getUserById(@PathVariable Long id) {
+        return Result.success(userService.getUserById(id));
+    }
+    
+    @PutMapping("/{id}")
+    public Result<User> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        return Result.success(userService.updateUser(id, userDTO));
+    }
+    
+    @DeleteMapping("/{id}")
+    public Result<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return Result.success();
     }
 }
 ```
 
----
+### 角色权限管理
 
-## 📅 开发计划
+```java
+@Service
+public class RoleService {
+    
+    @Autowired
+    private RoleMapper roleMapper;
+    
+    public void assignRoleToUser(Long userId, Long roleId) {
+        // 分配角色给用户
+        roleMapper.insertUserRole(userId, roleId);
+    }
+    
+    public void assignPermissionToRole(Long roleId, Long permissionId) {
+        // 分配权限给角色
+        roleMapper.insertRolePermission(roleId, permissionId);
+    }
+}
+```
 
-### v1.0 - 基础版本 ✅
-- [x] 用户认证（登录/登出）
-- [x] 账号 CRUD
-- [x] 平台管理
-- [x] 密码加密存储
+### 认证授权
 
-### v1.1 - 安全增强 ✅
-- [x] JWT 双令牌认证
-- [x] 接口限流
-- [x] 操作日志
-- [x] 密钥轮换
+```java
+@Service
+public class AuthService {
+    
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+    
+    public String login(String username, String password) {
+        // 验证用户
+        User user = userService.authenticate(username, password);
+        
+        // 生成JWT令牌
+        return jwtTokenUtil.generateToken(user);
+    }
+    
+    public boolean validateToken(String token) {
+        return jwtTokenUtil.validateToken(token);
+    }
+}
+```
 
-### v1.2 - 功能完善 ✅
-- [x] 收藏功能
-- [x] 最近访问
-- [x] 仪表盘统计
-- [x] 密码工具
+## 📊 API文档
 
-### v1.3 - 计划中 🚧
-- [ ] 数据导入/导出
-- [ ] 密码过期自动提醒
-- [ ] 双因素认证 (2FA)
+### 用户管理API
 
-### v2.0 - 远期规划 📋
-- [ ] 团队协作
-- [ ] 密码共享
-- [ ] Redis 缓存集成
+| 接口 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 创建用户 | POST | /api/users | 创建新用户 |
+| 获取用户 | GET | /api/users/{id} | 根据ID获取用户 |
+| 更新用户 | PUT | /api/users/{id} | 更新用户信息 |
+| 删除用户 | DELETE | /api/users/{id} | 删除用户 |
+| 用户列表 | GET | /api/users | 获取用户列表 |
 
----
+### 认证API
 
-## 🤝 相关项目
+| 接口 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 登录 | POST | /api/auth/login | 用户登录 |
+| 登出 | POST | /api/auth/logout | 用户登出 |
+| 刷新令牌 | POST | /api/auth/refresh | 刷新访问令牌 |
 
-| 项目 | 说明 |
-|------|------|
-| [account_manager_vue3](https://github.com/wo1261931780/account_manager_vue3) | 前端项目 (Vue 3 + Element Plus) |
+## 🔒 安全特性
 
----
+- **JWT认证**: 使用JWT进行无状态认证
+- **密码加密**: BCrypt密码加密存储
+- **权限控制**: 基于RBAC的权限控制
+- **接口保护**: 防止SQL注入和XSS攻击
+- **限流控制**: 接口访问频率限制
 
-## 🤝 贡献指南
+## 📝 更新日志
 
-欢迎提交 Issue 和 Pull Request！
+### v1.0.0 (2024-01-01)
+- ✨ 初始版本发布
+- ✨ 实现用户管理功能
+- ✨ 实现角色权限管理
+- ✨ 实现JWT认证
+- ✨ 集成Redis缓存
 
-1. Fork 本仓库
+## 👥 贡献指南
+
+欢迎贡献代码!请遵循以下步骤:
+
+1. Fork本仓库
 2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
-
----
+5. 提交Pull Request
 
 ## 📄 许可证
 
-本项目采用 [GNU Affero General Public License v3.0 (AGPL-3.0)](LICENSE) 开源许可证。
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
-### AGPL-3.0 要点
+## 📮 联系方式
 
-- ✅ 允许商业使用、修改、分发
-- ✅ 允许私人使用和专利授权
-- ⚠️ **网络使用披露**：如果您通过网络提供服务，必须向用户提供源代码
-- ⚠️ **相同许可证**：修改后的版本必须使用相同的 AGPL-3.0 许可证
+项目维护者: JOSP Team
 
 ---
 
-## 👨‍💻 作者
-
-**wo1261931780**
-
-- GitHub: [@wo1261931780](https://github.com/wo1261931780)
-
----
-
-<p align="center">
-  如果这个项目对你有帮助，请给一个 ⭐ Star 支持一下！
-</p>
+⭐ 如果这个项目对你有帮助,欢迎Star支持!
