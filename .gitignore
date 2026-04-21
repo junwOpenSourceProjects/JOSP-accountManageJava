@@ -1,1 +1,72 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+.vscode/
+*.swp
+*.swo
+*~
+
+# Eclipse
+bin/
+tmp/
+.metadata/
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# NetBeans
+nbproject/private/
+build/*.nb
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Mac
 .DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Package Files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual Machine
+*.class
+.jmh/
+hs_err_pid*
+replay_pid*
+
+# Application
+*.yml
+application*.yml
+!application-example.yml
