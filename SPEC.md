@@ -110,31 +110,155 @@ JOSP-accountManageJava/
 └── pom.xml
 ```
 
-## 7. 配置要求
+## 7. 架构设计
 
-### 7.1 环境要求
+### 7.1 系统架构图
+
+```mermaid
+graph TB
+    subgraph Frontend["前端层"]
+        Vue3["Vue3 Frontend<br/>JOSP-accountManagerVue3"]
+    end
+
+    subgraph Gateway["网关层"]
+        Cors["CORS Config<br/>跨域配置"]
+    end
+
+    subgraph Security["安全层"]
+        Security["Spring Security<br/>JWT 认证"]
+    end
+
+    subgraph Application["应用层"]
+        UserController["SysUserController<br/>用户管理"]
+        RoleController["SysRoleController<br/>角色管理"]
+        DeptController["SysDeptController<br/>部门管理"]
+    end
+
+    subgraph Service["服务层"]
+        UserService["SysUserService"]
+        RoleService["SysRoleService"]
+        DeptService["SysDeptService"]
+    end
+
+    subgraph Data["数据层"]
+        MyBatisPlus["MyBatis-Plus 3.5.16"]
+        DynamicDS["Dynamic DS 4.5.0<br/>多数据源"]
+        MySQL["MySQL 8.0"]
+    end
+
+    Frontend --> Cors
+    Cors --> Security
+    Security --> UserController
+    Security --> RoleController
+    Security --> DeptController
+    UserController --> UserService
+    RoleController --> RoleService
+    DeptController --> DeptService
+    UserService --> MyBatisPlus
+    RoleService --> MyBatisPlus
+    DeptService --> MyBatisPlus
+    MyBatisPlus --> DynamicDS
+    DynamicDS --> MySQL
+```
+
+### 7.2 请求处理流程
+
+```mermaid
+sequenceDiagram
+    participant Client as 前端 Client
+    participant Cors as CORS Filter
+    participant Security as Security Filter
+    participant Controller as Controller
+    participant Service as Service
+    participant Mapper as Mapper
+    participant DB as MySQL
+
+    Client->>Cors: HTTP Request
+    Cors->>Security: 跨域处理
+    Security->>Security: JWT Token 验证
+    Security->>Controller: 请求放行
+    Controller->>Service: 业务调用
+    Service->>Mapper: 数据操作
+    Mapper->>DB: SQL 执行
+    DB-->>Mapper: 查询结果
+    Mapper-->>Service: Entity
+    Service-->>Controller: Result
+    Controller-->>Client: Unified Response
+```
+
+### 7.3 数据库ER图
+
+```mermaid
+erDiagram
+    SYS_USER ||--o{ SYS_USER_ROLE : "拥有"
+    SYS_ROLE ||--o{ SYS_USER_ROLE : "包含"
+    SYS_DEPT ||--o{ SYS_USER : "属于"
+
+    SYS_USER {
+        bigint id PK "主键"
+        varchar username "用户名"
+        varchar password "密码"
+        varchar nickname "昵称"
+        varchar email "邮箱"
+        varchar phone "电话"
+        tinyint status "状态"
+        datetime create_time "创建时间"
+        datetime update_time "更新时间"
+        tinyint deleted "逻辑删除"
+    }
+
+    SYS_ROLE {
+        bigint id PK "主键"
+        varchar name "角色名"
+        varchar code "角色编码"
+        varchar description "描述"
+        datetime create_time "创建时间"
+        datetime update_time "更新时间"
+        tinyint deleted "逻辑删除"
+    }
+
+    SYS_USER_ROLE {
+        bigint id PK "主键"
+        bigint user_id FK "用户ID"
+        bigint role_id FK "角色ID"
+    }
+
+    SYS_DEPT {
+        bigint id PK "主键"
+        varchar name "部门名称"
+        bigint parent_id "父部门ID"
+        int sort "排序"
+        datetime create_time "创建时间"
+        datetime update_time "更新时间"
+        tinyint deleted "逻辑删除"
+    }
+```
+
+## 8. 配置要求
+
+### 8.1 环境要求
 - JDK 25
 - Maven 3.6+
 - MySQL 8.0+
 
-### 7.2 数据库配置
+### 8.2 数据库配置
 配置数据源连接信息（application.yml）：
 - 主数据源：MySQL
 - 数据库名：account_manage
 
-## 8. 安全特性
+## 9. 安全特性
 
 - Spring Security 认证
 - JWT Token 认证
 - 逻辑删除（软删除）
 - 跨域配置
 
-## 9. 文档
+## 10. 文档
 
 - Knife4j 在线API文档：/doc.html
 - Swagger UI：/swagger-ui.html
 
-## 10. 默认账号
+## 11. 默认账号
 
 - 用户名：admin
 - 密码：123456
