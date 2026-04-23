@@ -12,7 +12,7 @@ spring:
         master:
           url: jdbc:mysql://localhost:3306/account_manage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
           username: root
-          password: root
+          password: ${SPRING_DATASOURCE_PASSWORD:junw555}
           driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis-plus:
