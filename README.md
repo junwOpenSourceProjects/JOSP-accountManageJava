@@ -115,6 +115,54 @@ JOSP-accountManageJava/
 └── pom.xml
 ```
 
+## 系统架构图
+
+```mermaid
+flowchart TB
+    subgraph Frontend["前端展示层"]
+        Vue["Vue3 前端应用"]
+    end
+
+    subgraph API["API 网关层"]
+        Security["Spring Security<br/>JWT 认证"]
+    end
+
+    subgraph Controller["控制器层"]
+        UserC["UserController<br/>用户管理"]
+        RoleC["RoleController<br/>角色管理"]
+        DeptC["DeptController<br/>部门管理"]
+    end
+
+    subgraph Service["业务逻辑层"]
+        UserS["UserService<br/>用户服务"]
+        RoleS["RoleService<br/>角色服务"]
+        DeptS["DeptService<br/>部门服务"]
+    end
+
+    subgraph Data["数据访问层"]
+        MP["MyBatis-Plus<br/>ORM 框架"]
+        DynamicDS["Dynamic Datasource<br/>动态数据源"]
+    end
+
+    subgraph Database["数据存储层"]
+        MySQL[(MySQL 8.0<br/>主数据库)]
+    end
+
+    Frontend -->|"HTTP/JWT"| Security
+    Security --> Controller
+    Controller --> Service
+    Service --> MP
+    MP --> DynamicDS
+    DynamicDS --> MySQL
+
+    style Frontend fill:#e3f2fd,stroke:#1565c0
+    style API fill:#fff3e0,stroke:#f57c00
+    style Controller fill:#f3e5f5,stroke:#7b1fa2
+    style Service fill:#e8f5e9,stroke:#388e3c
+    style Data fill:#fce4ec,stroke:#c2185b
+    style Database fill:#e0f7fa,stroke:#00838f
+```
+
 ## 默认账号
 
 - 用户名：admin
